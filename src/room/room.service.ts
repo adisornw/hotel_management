@@ -29,7 +29,7 @@ export class RoomService {
         return this.rooms.find(_room => _room.roomNumber == roomNumber)
     }
 
- 
+
     create(floor: number) {
         //! find next room number
         let nextNumber: number = 1
@@ -44,28 +44,11 @@ export class RoomService {
         this.rooms.push({ ...newRoom })
     }
 
-    updateRoomStatus(roomNumber:string,status:roomStatuses){
+    updateRoomStatus(roomNumber: string, status: roomStatuses) {
         const roomIndex: number = this.rooms.findIndex(_room => _room.roomNumber == roomNumber)
         if (roomIndex == -1) return `Room ${roomNumber} not found`
         this.rooms[roomIndex].isAvaliable = status == roomStatuses.AVALIABLE ? true : false
     }
 
 
-    checkOut(keyCard: IKeyCard, guest: IGuest) {
-        // //check room
-        // const room: IRoom = this.findOneByKeyCard(keyCard)
-        // if (!room) return 'not found room'
-        // if (room.guest.name != guest.name) return `Only ${room.guest.name} can checkout with keycard number ${keyCard.number}.`
-        // return `Room ${room.roomNumber} is checkout.`
-    }
-
-
-    booking(roomNumber: string, guest: IGuest, keycard: IKeyCard): string {
-        // //check room
-        // const room: any = this.findOneByRoomNumber(roomNumber)
-        // if (!room) return 'not found room'
-        // if (!room.isAvaliable) return `Cannot book room ${roomNumber} for ${guest.name}, The room is currently booked by ${room.guest.name}.`
-
-        return `Room ${roomNumber} is booked by ${guest.name} with keycard number ${keycard.number}.`
-    }
 }

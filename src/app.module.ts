@@ -10,7 +10,7 @@ import { RoomService } from './room/room.service';
 @Module({
   imports: [],
   controllers: [AppController],
-  providers: [AppService, HotelService, RoomService, KeycardService, GuestService, BookingService],
+  providers: [AppService, HotelService, RoomService, KeycardService, GuestService,BookingService],
 })
 export class AppModule {
 
