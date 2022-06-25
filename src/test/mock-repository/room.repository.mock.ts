@@ -16,6 +16,6 @@ export const MockRoomRepository = {
     findOneByRoomNo:jest.fn((roomNumber:string):IRoom=>{
         return MockDataRooms.find(_room=>_room.roomNumber == roomNumber)
     }),
-
+    findRoomsByFloor:jest.fn(),
     updateRoomStatus:jest.fn()
 }

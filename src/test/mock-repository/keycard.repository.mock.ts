@@ -1,3 +1,4 @@
+import { keycardStatuses } from "src/keycard/keycard.enum"
 import { IKeyCard } from "../../interface/keycard.interface"
 
 export const MockDataKeycards: IKeyCard[] = [
@@ -17,5 +18,5 @@ export const MockKeycardRepository = {
     findAvaliableCard: jest.fn(():IKeyCard[]=>{
         return MockDataKeycards.filter(_card=>_card.isAvaliable)
     }),
-    updateKeycardStatus:jest.fn(),
+    updateKeycardStatus:jest.fn()
 }
