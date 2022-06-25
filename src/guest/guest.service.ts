@@ -3,7 +3,7 @@ import { IGuest } from "src/interface/guest.interface";
 
 @Injectable()
 export class GuestService {
-    guests: IGuest[] = [];
+    private guests: IGuest[] = [];
 
     constructor(
     ) { }

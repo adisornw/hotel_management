@@ -11,7 +11,7 @@ import { roomStatuses } from "../room/room.enum";
 
 @Injectable()
 export class BookingService {
-    bookings: IBooking[] = [];
+    private bookings: IBooking[] = [];
 
     constructor(
         private guestService: GuestService,

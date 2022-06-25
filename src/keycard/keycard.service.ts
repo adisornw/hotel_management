@@ -5,7 +5,7 @@ import { keycardStatuses } from "./keycard.enum";
 @Injectable()
 export class KeycardService {
     // mock hotel db
-    keycards: IKeyCard[] = []
+    private keycards: IKeyCard[] = []
 
     constructor() {
     }

@@ -5,8 +5,7 @@ import { RoomService } from "../room/room.service";
 
 @Injectable()
 export class HotelService {
-
-
+    private hotel: IHotel;
     constructor(
         private roomService: RoomService,
         private keycardService: KeycardService
@@ -21,6 +20,12 @@ export class HotelService {
                 this.keycardService.create()
             }
         }
-        return `Hotel created with ${numberOfFloor} floor(s), ${numberOfRoomPerFloor} room(s) per floor.`
+
+        this.hotel = {
+            numberOfFloor: numberOfFloor,
+            numberOfRoomPerFloor: numberOfRoomPerFloor
+        }
+
+        return `Hotel created with ${this.hotel.numberOfFloor} floor(s), ${this.hotel.numberOfRoomPerFloor} room(s) per floor.`
     }
 }
