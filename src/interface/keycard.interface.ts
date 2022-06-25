@@ -1,3 +1,4 @@
 export interface IKeyCard {
-    number: string //! unique
+    number: number
+    isAvaliable:boolean
 }
