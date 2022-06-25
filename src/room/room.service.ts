@@ -44,6 +44,12 @@ export class RoomService {
         this.rooms.push({ ...newRoom })
     }
 
+    updateRoomStatus(roomNumber:string,status:roomStatuses){
+        const roomIndex: number = this.rooms.findIndex(_room => _room.roomNumber == roomNumber)
+        if (roomIndex == -1) return `Room ${roomNumber} not found`
+        this.rooms[roomIndex].isAvaliable = status == roomStatuses.AVALIABLE ? true : false
+    }
+
 
     checkOut(keyCard: IKeyCard, guest: IGuest) {
         // //check room
