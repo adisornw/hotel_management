@@ -85,4 +85,28 @@ export class BookingService {
 
         return `Room ${booking.roomNumber} is checkout.`;
     }
+
+    checkOutByFloor(floor:number){
+        //! find rooms in floor
+        let checkOutRoomNumber:string[] =[] // for display response
+        const floorRooms:IRoom[] = this.roomService.rooms.filter(_room=>_room.floor == floor && !_room.isAvaliable)
+        for(const room of floorRooms){
+            const bookingIndex:number = this.bookings.findIndex(_book=>_book.roomNumber == room.roomNumber)
+           
+            //! update booking checkout date time
+            this.bookings[bookingIndex].checkoutAt = new Date();
+
+            //! update room to avaliable
+            this.roomService.updateRoomStatus(room.roomNumber,roomStatuses.AVALIABLE)
+
+            //! update keycard to avaliable
+            this.keycardService.updateKeycardStatus({
+                number: this.bookings[bookingIndex].keycardNumber
+            },keycardStatuses.AVALIABLE)
+
+            checkOutRoomNumber.push(room.roomNumber) // for display only
+        } // end for...of
+
+        return `Room ${checkOutRoomNumber.toString()} are checkout.`
+    }
 }// end main class

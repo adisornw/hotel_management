@@ -75,8 +75,11 @@ export class AppService implements OnApplicationBootstrap {
         case 'list_guest_by_floor':
           break;
         case 'checkout_guest_by_floor':
+          const checkOutByFloorResult:string = this.bookingService.checkOutByFloor(actions[1])
+          console.log(checkOutByFloorResult)
           break;
         case 'book_by_floor':
+          
           break;
         default: // not do anything
       }

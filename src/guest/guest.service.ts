@@ -1,7 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { BookingService } from "src/booking/booking.service";
 import { IGuest } from "src/interface/guest.interface";
-import { RoomService } from "src/room/room.service";
 
 @Injectable()
 export class GuestService {
