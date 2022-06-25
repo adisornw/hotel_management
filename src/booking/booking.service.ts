@@ -1,157 +1,149 @@
 import { Injectable } from "@nestjs/common";
 import { keycardStatuses } from "../keycard/keycard.enum";
 import { GuestService } from "../guest/guest.service";
-import { IBooking } from "../interface/booking.interface";
+import { IBooking, INewBooking } from "../interface/booking.interface";
 import { IGuest } from "../interface/guest.interface";
 import { IKeyCard } from "../interface/keycard.interface";
 import { IRoom } from "../interface/room.interface";
-import { KeycardService } from "../keycard/keycard.service";
-import { RoomService } from "../room/room.service";
+import { BookingRepository } from "../repository/booking.repository";
+import { RoomRepository } from "../repository/room.repository";
+import { KeycardRepository } from "../repository/keycard.repository";
 import { roomStatuses } from "../room/room.enum";
+import { GuestRepository } from "src/repository/guest.repository";
 
 @Injectable()
 export class BookingService {
-    private bookings: IBooking[] = [];
 
     constructor(
         private guestService: GuestService,
-        private roomService: RoomService,
-        private keycardService: KeycardService,
+        private bookRepository: BookingRepository,
+        private roomRepository: RoomRepository,
+        private keycardRepositry: KeycardRepository,
+        private guestRepository: GuestRepository,
     ) { }
 
-    find() {
-        return this.bookings
+    fetch(): IBooking[] {
+        return this.bookRepository.find();
     }
 
-    findOneByRoomNumber(roomNumber: string) {
-        return this.bookings.find(_book => _book.roomNumber == roomNumber && !_book.checkoutAt)
-    }
-
-    findBookingByFloor(floor: number) {
-        const rooms: IRoom[] = this.roomService.rooms.filter(_room => _room.floor == floor)
-        let bookings: IBooking[] = this.bookings.filter(_booking => {
-            return rooms.some(_room => _room.roomNumber == _booking.roomNumber) && !_booking.checkoutAt
-        })
-        
-        let guestNameBookings:string[] = []; // for display
-        for(const booking of bookings){
-            guestNameBookings.push(booking.guestName)   
-        }
-        console.log(guestNameBookings.toString())
-        return bookings
-    }
-
-    findCurrentBookings(): IBooking[] {
-        return this.bookings.filter(_book => !_book.checkoutAt)
-    }
-
-    makeBooking(roomNumber: string, guest: IGuest): string {
-        let currentGuest: IGuest = this.guestService.findOneByName(guest.name)
+    book(roomNumber: string, guest: IGuest): string {
+        let currentGuest: IGuest = this.guestRepository.findOneByName(guest.name)
         if (!currentGuest) {
             //! create new guest
             currentGuest = this.guestService.create(guest)
         }// end check guest
-        const bookingRoom: IRoom = this.roomService.findOneByRoomNumber(roomNumber)
+
+        const bookingRoom: IRoom = this.roomRepository.findOneByRoomNo(roomNumber)
+
         if (!bookingRoom.isAvaliable) {
             //! find who is using that room by booking history
-            const booked: IBooking = this.bookings.find(_booking => _booking.roomNumber == roomNumber && !_booking.checkoutAt)
+            const booked: IBooking = this.bookRepository.findOneByRoomNo(roomNumber)
             if (!booked) return `Please call staff to check and update status room number ${roomNumber}`
             return `Cannot book room ${roomNumber} for ${guest.name}, The room is currently booked by ${booked.guestName}.`
         }
 
-        // find avaliable keycard
-        const keycards: IKeyCard[] = this.keycardService.findKeycardByStatus(keycardStatuses.AVALIABLE)
+
+        const keycards: IKeyCard[] = this.keycardRepositry.findAvaliableCard()
         if (keycards.length == 0) return 'Cannot book room because keycard out of stock'
 
-        // new booking list
-        this.bookings.push({
-            guestName: currentGuest.name,
+        let newBooking: INewBooking = {
             bookAt: new Date(),
-            keycardNumber: keycards[0].number,
+            guestName: guest.name,
             roomNumber: roomNumber,
-        })
+            keycardNumber: keycards[0].number,
+        }
 
-        // update keycard used
-        this.keycardService.updateKeycardStatus(keycards[0], keycardStatuses.UNAVALIBLE)
+        //! new booking
+        newBooking = this.bookRepository.save(newBooking)
 
-        // update room unavaliable
-        this.roomService.updateRoomStatus(roomNumber, roomStatuses.UNAVALIBLE)
+        //! update keycard used
+        this.keycardRepositry.updateKeycardStatus(keycards[0].number, keycardStatuses.UNAVALIBLE)
 
-        return `Room ${roomNumber} is booked by ${currentGuest.name} with keycard number ${keycards[0].number}.`
-    } // end booking room
+        //! update room unavaliable
+        this.roomRepository.updateRoomStatus(roomNumber, roomStatuses.UNAVALIBLE)
 
-    makeBookingByFloor(floor: number, guest: IGuest): string {
-        let rooms: IRoom[] = this.roomService.findRoomByFloor(floor)
-        rooms = rooms.filter(_room => _room.isAvaliable) // only avaliable rooms
+        return `Room ${roomNumber} is booked by ${guest.name} with keycard number ${keycards[0].number}.`
+    } // end book fn
 
-        //make booking
+    bookByFloor(floor: number, guest: IGuest): string {
+        //! checking all room in floor are avaliable
+        const rooms: IRoom[] = this.roomRepository.findRoomsByFloor(floor);
+        if (rooms.some(_room => !_room.isAvaliable)) return `Cannot book floor ${floor} for ${guest.name}.`
+
+
+        let listBookRoomNumber:string[] = [];
+        let listKeyCardNumberUsage:number[] = [];
         for (const room of rooms) {
-            this.makeBooking(room.roomNumber, guest)
-        }
+            const keycards: IKeyCard[] = this.keycardRepositry.findAvaliableCard()
+            if (keycards.length == 0) return 'Cannot book room because keycard out of stock'
+    
+            let newBooking: INewBooking = {
+                bookAt: new Date(),
+                guestName: guest.name,
+                roomNumber: room.roomNumber,
+                keycardNumber: keycards[0].number,
+            }
+    
+            //! new booking
+            newBooking = this.bookRepository.save(newBooking)
+    
+            //! update keycard used
+            this.keycardRepositry.updateKeycardStatus(keycards[0].number, keycardStatuses.UNAVALIBLE)
+    
+            //! update room unavaliable
+            this.roomRepository.updateRoomStatus(room.roomNumber, roomStatuses.UNAVALIBLE)
 
-        let currentBookings: IBooking[] = this.findCurrentBookings()
-        currentBookings = currentBookings.filter(_book => _book.guestName == guest.name && !_book.checkoutAt) // show only gust booking
+            //! for display
+            listBookRoomNumber.push(room.roomNumber)
+            listKeyCardNumberUsage.push(keycards[0].number)
+        }// end for..of booking
 
-        // make sure curren booking only the same floor
-        currentBookings = currentBookings.filter(_book => {
-            return rooms.some(_room => _room.roomNumber == _book.roomNumber)
-        })
-
-        // for display rooms number which have booking by this guest
-        let usingKeycards: number[] = [];
-        let bookingRooms: string[] = [];
-        for (const book of currentBookings) {
-            usingKeycards.push(book.keycardNumber)
-            bookingRooms.push(book.roomNumber)
-        }
-        return `Room ${bookingRooms.toString()} are booked with keycard number ${usingKeycards.toString()}`
+     
+        return `Room ${listBookRoomNumber.toString()} are booked with keycard number ${listKeyCardNumberUsage.toString()}`;
     }
 
-    checkOutByKeycard(keycard: IKeyCard, guest: IGuest): string {
-        const bookingIndex: number = this.bookings.findIndex(_book => {
-            return _book.keycardNumber == keycard.number && !_book.checkoutAt
-        })
-
-        if (bookingIndex == -1) return `Please call staff to check and update key card number ${keycard.number}`
-        const booking: IBooking = this.bookings[bookingIndex]
+    checkout(keycardNumber: number, guest: IGuest): string {
+        let booking: IBooking = this.bookRepository.findOneByKeycardNumber(keycardNumber)
+        if (!booking) return `Please call staff to check and update key card number ${keycardNumber}`
 
         if (guest.name != booking.guestName) {
-            return `Only ${booking.guestName} can checkout with keycard number ${keycard.number}.`
+            return `Only ${booking.guestName} can checkout with keycard number ${keycardNumber}.`
         }
 
-        //! update checkout time
-        this.bookings[bookingIndex].checkoutAt = new Date();
+        //! update booking checkout time avaliable
+        booking.checkoutAt = new Date();
+        booking = this.bookRepository.update(booking)
 
-        //! update room avaliable
-        this.roomService.updateRoomStatus(booking.roomNumber, roomStatuses.AVALIABLE)
+        //! update room to avaliable
+        this.roomRepository.updateRoomStatus(booking.roomNumber, roomStatuses.AVALIABLE)
 
         //! update keycard avaliable
-        this.keycardService.updateKeycardStatus(keycard, keycardStatuses.AVALIABLE)
+        this.keycardRepositry.updateKeycardStatus(booking.keycardNumber, keycardStatuses.AVALIABLE)
 
         return `Room ${booking.roomNumber} is checkout.`;
-    }
 
-    checkOutByFloor(floor: number) {
-        //! find rooms in floor
-        let checkOutRoomNumber: string[] = [] // for display response
-        const floorRooms: IRoom[] = this.roomService.rooms.filter(_room => _room.floor == floor && !_room.isAvaliable)
-        for (const room of floorRooms) {
-            const bookingIndex: number = this.bookings.findIndex(_book => _book.roomNumber == room.roomNumber)
+    }// end checkout
 
-            //! update booking checkout date time
-            this.bookings[bookingIndex].checkoutAt = new Date();
+    checkoutByFloor(floor: number): string {
+        let bookings: IBooking[] = this.bookRepository.findCurrentBookings();
+        //! do like join
+        bookings.map(_book => {
+            _book.guest = this.guestRepository.findOneByName(_book.guestName)
+            _book.room = this.roomRepository.findOneByRoomNo(_book.roomNumber)
+        })
 
-            //! update room to avaliable
-            this.roomService.updateRoomStatus(room.roomNumber, roomStatuses.AVALIABLE)
+        //! filter only floor select
+        bookings = bookings.filter(_book => {
+            return _book.room.floor == floor
+        })
 
-            //! update keycard to avaliable
-            this.keycardService.updateKeycardStatus({
-                number: this.bookings[bookingIndex].keycardNumber
-            }, keycardStatuses.AVALIABLE)
+        const checkoutRoomNumbers: string[] = [];
+        for (const book of bookings) {
+            checkoutRoomNumbers.push(book.roomNumber)
+            this.checkout(book.keycardNumber, book.guest)
+        }
 
-            checkOutRoomNumber.push(room.roomNumber) // for display only
-        } // end for...of
+        return `Room ${checkoutRoomNumbers.toString()} are checkout`
+    } // end check out by floor fn
 
-        return `Room ${checkOutRoomNumber.toString()} are checkout.`
-    }
 }// end main class

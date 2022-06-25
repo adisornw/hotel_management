@@ -1,41 +1,85 @@
 import { Injectable } from "@nestjs/common";
-import { IGuest } from "src/interface/guest.interface";
+import { IBooking } from "../interface/booking.interface";
+import { IGuest } from "../interface/guest.interface";
+import { IRoom } from "../interface/room.interface";
+import { BookingRepository } from "../repository/booking.repository";
+import { RoomRepository } from "../repository/room.repository";
+import { GuestRepository } from "../repository/guest.repository";
 
 @Injectable()
 export class GuestService {
-    private guests: IGuest[] = [];
 
     constructor(
+        private guestRepository: GuestRepository,
+        private bookingRepository: BookingRepository,
+        private roomRepository:RoomRepository,
     ) { }
 
-    find(): IGuest[] {
-        return this.guests
+    listGuest(): string {
+        let bookings: IBooking[] = [...this.bookingRepository.findCurrentBookings()];
+
+        const allGuestName: string[] = [];   //! for display 
+
+        //mapping booking to guests
+        bookings.map(_book => {
+            allGuestName.push(_book.guestName)
+            // const guest: IGuest = this.guestRepository.findOneByName(_book.guestName)
+            // if (guest) _book.guest = { ...guest }
+        })
+        return allGuestName.toString();
     }
 
-    findOneByName(name: string): IGuest {
-        return this.guests.find(_guest => _guest.name == name)
+    getGuestInRoom(roomNumber: string): IGuest {
+        const booking: IBooking = this.bookingRepository.findOneByRoomNo(roomNumber)
+        const guest: IGuest = this.guestRepository.findOneByName(booking.guestName)
+        return guest
+    }
+
+    listGuestByAge(age: number, ageCondition?: string):IGuest[] {
+        //mapping booking with guest flow like do sql join
+        let bookings: IBooking[] = this.bookingRepository.findCurrentBookings();
+
+        const listGuestName: string[] = []
+        bookings.forEach(_book => listGuestName.push(_book.guestName))
+
+
+        let guests: IGuest[] = this.guestRepository.findByListName(listGuestName)
+
+        switch(ageCondition){
+            case '<': guests = guests.filter(_guest=>_guest.age < age)
+            break;
+            case '>': guests = guests.filter(_guest=>_guest.age > age)
+            break;
+            default: // do nothing
+        }
+        return guests
+    }
+
+    listGuestByFloor(floor:number):IGuest[]{
+        let bookings: IBooking[] = this.bookingRepository.findCurrentBookings();
+
+        //! do like join
+        bookings.map(_book=>{
+            _book.guest = this.guestRepository.findOneByName(_book.guestName)
+            _book.room = this.roomRepository.findOneByRoomNo(_book.roomNumber)
+        })
+
+        //filter by floor
+        bookings = bookings.filter(_book=>{
+            return _book.room && _book.room.floor == floor
+        })
+
+        //mapping to guests
+        let guests:IGuest[] = [];
+        bookings.forEach(_book=>{
+            guests.push({..._book.guest})
+        })
+        return guests
+        // return rooms.filter(_room=>_room.floor == floor)
     }
 
     create(newGuest: IGuest): IGuest {
-        this.guests.push({ ...newGuest })
+        this.guestRepository.save(newGuest)
         return newGuest
-    }
-
-
-    listGuestByAge(age:number,ageCondition?:string){
-        let guests:IGuest[] = [];
-        switch(ageCondition){
-            case '<' : guests = this.guests.filter(_guest=> _guest.age < age)
-            break;
-            case '>' : guests = this.guests.filter(_guest=> _guest.age > age)
-            default: guests = [...this.guests]
-        }
-        
-        //! mapping result 
-        let nameGuests:string[] = [];
-        guests.forEach(_guest=>{
-            nameGuests.push(_guest.name)
-        })
-        console.log(nameGuests.toString())
     }
 }
