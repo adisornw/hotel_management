@@ -3,7 +3,7 @@ import { keycardStatuses } from "../keycard/keycard.enum";
 import { IKeyCard } from "../interface/keycard.interface";
 
 export class KeycardRepository {
-    keycards: IKeyCard[] = [];
+    private keycards: IKeyCard[] = [];
     constructor() { }
 
     find(): IKeyCard[] {

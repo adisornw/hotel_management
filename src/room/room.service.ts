@@ -8,8 +8,6 @@ import { roomStatuses } from "./room.enum";
 
 @Injectable()
 export class RoomService {
-    //! mock room db
-    rooms: IRoom[] = [] // end mock db
 
     constructor(
         private roomRepository: RoomRepository

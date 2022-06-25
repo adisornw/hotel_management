@@ -34,15 +34,13 @@ export class BookingService {
         }// end check guest
 
         const bookingRoom: IRoom = this.roomRepository.findOneByRoomNo(roomNumber)
-
         if (!bookingRoom.isAvaliable) {
             //! find who is using that room by booking history
             const booked: IBooking = this.bookRepository.findOneByRoomNo(roomNumber)
             if (!booked) return `Please call staff to check and update status room number ${roomNumber}`
             return `Cannot book room ${roomNumber} for ${guest.name}, The room is currently booked by ${booked.guestName}.`
         }
-
-
+        
         const keycards: IKeyCard[] = this.keycardRepositry.findAvaliableCard()
         if (keycards.length == 0) return 'Cannot book room because keycard out of stock'
 
