@@ -113,5 +113,25 @@ describe('Hotel Unit Test', () => {
             const result = service.checkout(mockKeycard.number,mockGuest)
             expect(result).toEqual(`Room ${mockBooked.roomNumber} is checkout.`)
         })
+
+        it('check-out with other guest faile case', () => {
+            const mockKeycard: IKeyCard = { number: 1 }
+            const mockGuest:IGuest = {
+                name:'TonyStark'
+            }
+            
+            //! mock find booking by card
+            const mockBooked:IBooking = {
+                guestName: 'Thor',
+                roomNumber: '201',
+                keycardNumber: 1,
+                bookAt: new Date()
+            }
+
+            MockBookingRepository.findOneByKeycardNumber.mockReturnValue(mockBooked)
+
+            const result = service.checkout(mockKeycard.number,mockGuest)
+            expect(result).toEqual(`Only ${mockBooked.guestName} can checkout with keycard number ${mockBooked.keycardNumber}.`)
+        })
     })
 }) // main test
