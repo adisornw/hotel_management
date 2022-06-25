@@ -5,5 +5,9 @@ export const MockBookingRepository = {
         return [...MockDataBookings]
     }),
     findOneByRoomNo:jest.fn(),
+    findOneByKeycardNumber:jest.fn(),
+    update:jest.fn((updBooking:IBooking)=>{
+        return updBooking
+    }),
     save:jest.fn()
 }

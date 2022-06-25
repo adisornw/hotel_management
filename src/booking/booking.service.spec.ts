@@ -10,6 +10,7 @@ import { MockKeycardRepository } from "../test/mock-repository/keycard.repositor
 import { IGuest } from "../interface/guest.interface";
 import { MockBookingRepository } from "../test/mock-repository/book.repository.mock";
 import { IBooking } from "src/interface/booking.interface";
+import { IKeyCard } from "src/interface/keycard.interface";
 
 describe('Hotel Unit Test', () => {
     let service: BookingService
@@ -77,11 +78,11 @@ describe('Hotel Unit Test', () => {
             })
 
             //! mock book detail
-            const mockBookedResult:IBooking = {
+            const mockBookedResult: IBooking = {
                 guestName: 'Thor',
                 roomNumber: '203',
                 keycardNumber: 1,
-                bookAt: new Date() 
+                bookAt: new Date()
             }
             MockBookingRepository.findOneByRoomNo.mockReturnValue(mockBookedResult)
 
@@ -90,4 +91,27 @@ describe('Hotel Unit Test', () => {
             expect(result).toEqual(`Cannot book room ${mockRoomBooking} for ${mockGuest.name}, The room is currently booked by ${mockBookedResult.guestName}.`)
         })
     }) // end hotel suit
+
+
+    describe('Check-Out Test Suit', () => {
+        it('check-out success case', () => {
+            const mockKeycard: IKeyCard = { number: 4 }
+            const mockGuest:IGuest = {
+                name:'TonyStark'
+            }
+            
+            //! mock find booking by card
+            const mockBooked:IBooking = {
+                guestName: 'TonyStark',
+                roomNumber: '201',
+                keycardNumber: 4,
+                bookAt: new Date()
+            }
+
+            MockBookingRepository.findOneByKeycardNumber.mockReturnValue(mockBooked)
+
+            const result = service.checkout(mockKeycard.number,mockGuest)
+            expect(result).toEqual(`Room ${mockBooked.roomNumber} is checkout.`)
+        })
+    })
 }) // main test
