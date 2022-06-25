@@ -8,9 +8,18 @@ import { KeycardService } from './keycard/keycard.service';
 import { RoomService } from './room/room.service';
 
 @Module({
-  imports: [],
+  imports: [
+    
+  ],
   controllers: [AppController],
-  providers: [AppService, HotelService, RoomService, KeycardService, GuestService,BookingService],
+  providers: [
+    AppService, 
+    HotelService, 
+    RoomService, 
+    KeycardService, 
+    BookingService,
+    GuestService
+  ],
 })
 export class AppModule {
 

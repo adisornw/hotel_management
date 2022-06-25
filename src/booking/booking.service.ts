@@ -12,11 +12,20 @@ import { roomStatuses } from "../room/room.enum";
 @Injectable()
 export class BookingService {
     bookings: IBooking[] = [];
+    
     constructor(
         private guestService: GuestService,
         private roomService: RoomService,
         private keycardService: KeycardService,
     ) { }
+
+    find(){
+        return this.bookings
+    }
+
+    findCurrentBookings():IBooking[]{
+        return this.bookings.filter(_book=>!_book.checkoutAt)
+    }
 
     makeBooking(roomNumber: string, guest: IGuest): string {
         let currentGuest: IGuest = this.guestService.findOneByName(guest.name)

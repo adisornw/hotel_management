@@ -1,7 +1,9 @@
 import { Injectable, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
 import * as fs from 'fs';
 import { BookingService } from './booking/booking.service';
+import { GuestService } from './guest/guest.service';
 import { HotelService } from './hotel/hotel.service';
+import { IBooking } from './interface/booking.interface';
 import { IGuest } from './interface/guest.interface';
 import { IKeyCard } from './interface/keycard.interface';
 import { IRoom } from './interface/room.interface';
@@ -14,7 +16,8 @@ export class AppService implements OnApplicationBootstrap {
   constructor(
     private hotelService: HotelService,
     private roomService: RoomService,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private guestService:GuestService,
   ) { }
 
   onApplicationBootstrap() {
@@ -58,6 +61,12 @@ export class AppService implements OnApplicationBootstrap {
           console.log(checkoutResult)
           break;
         case 'list_guest':
+          const bookings:IBooking[] = this.bookingService.findCurrentBookings();
+          const listGuest:string[] = []
+          bookings.forEach(_book=>{
+            listGuest.push(_book.guestName)
+          })
+          console.log(listGuest.toString())
           break;
         case 'get_guest_in_room':
           break;
