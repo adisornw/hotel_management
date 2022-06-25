@@ -20,4 +20,22 @@ export class GuestService {
         this.guests.push({ ...newGuest })
         return newGuest
     }
+
+
+    listGuestByAge(age:number,ageCondition?:string){
+        let guests:IGuest[] = [];
+        switch(ageCondition){
+            case '<' : guests = this.guests.filter(_guest=> _guest.age < age)
+            break;
+            case '>' : guests = this.guests.filter(_guest=> _guest.age > age)
+            default: guests = [...this.guests]
+        }
+        
+        //! mapping result 
+        let nameGuests:string[] = [];
+        guests.forEach(_guest=>{
+            nameGuests.push(_guest.name)
+        })
+        console.log(nameGuests.toString())
+    }
 }

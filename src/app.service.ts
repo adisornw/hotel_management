@@ -17,7 +17,7 @@ export class AppService implements OnApplicationBootstrap {
     private hotelService: HotelService,
     private roomService: RoomService,
     private bookingService: BookingService,
-    private guestService:GuestService,
+    private guestService: GuestService,
   ) { }
 
   onApplicationBootstrap() {
@@ -28,11 +28,12 @@ export class AppService implements OnApplicationBootstrap {
     //? [0] is actions
     for (const input of inputActions) {
       const actions: any[] = input.split(' ');
+      let result: string = '';
       switch (actions[0]) {
         case 'create_hotel':
           const numberOfFloor: number = actions[1]
           const numberRoomPerFloor: number = actions[2]
-          const createHotelResult:string = this.hotelService.create(numberOfFloor, numberRoomPerFloor)
+          const createHotelResult: string = this.hotelService.create(numberOfFloor, numberRoomPerFloor)
           console.log(createHotelResult);
           break;
         case 'book':
@@ -57,29 +58,45 @@ export class AppService implements OnApplicationBootstrap {
           const guestCheckout: IGuest = {
             name: actions[2]
           }
-          const checkoutResult:string = this.bookingService.checkOutByKeycard(checkoutKeycard, guestCheckout)
+          const checkoutResult: string = this.bookingService.checkOutByKeycard(checkoutKeycard, guestCheckout)
           console.log(checkoutResult)
           break;
         case 'list_guest':
-          const bookings:IBooking[] = this.bookingService.findCurrentBookings();
-          const listGuest:string[] = []
-          bookings.forEach(_book=>{
+          const bookings: IBooking[] = this.bookingService.findCurrentBookings();
+          const listGuest: string[] = []
+          bookings.forEach(_book => {
+            if (listGuest.some(_name => _name == _book.guestName)) return // no need to display duplicate name
             listGuest.push(_book.guestName)
           })
           console.log(listGuest.toString())
           break;
         case 'get_guest_in_room':
+          const guestRoom: string = actions[1]
+          const gustBooking: IBooking = this.bookingService.findOneByRoomNumber(guestRoom)
+          console.log(gustBooking.guestName)
           break;
         case 'list_guest_by_age':
+          const ageCondition:string = actions[1]
+          const listAge: number = actions[2]
+          this.guestService.listGuestByAge(listAge,ageCondition)
+
           break;
         case 'list_guest_by_floor':
+          const guestFloor: number = actions[1]
+          this.bookingService.findBookingByFloor(guestFloor)
           break;
         case 'checkout_guest_by_floor':
-          const checkOutByFloorResult:string = this.bookingService.checkOutByFloor(actions[1])
+          const checkOutByFloorResult: string = this.bookingService.checkOutByFloor(actions[1])
           console.log(checkOutByFloorResult)
           break;
         case 'book_by_floor':
-          
+          const bookingFloor: number = actions[1];
+          const guestFloorBooking: IGuest = {
+            name: actions[2],
+            age: actions[3]
+          }
+          const bookByFloorResult: string = this.bookingService.makeBookingByFloor(bookingFloor, guestFloorBooking)
+          console.log(bookByFloorResult);
           break;
         default: // not do anything
       }
