@@ -1,5 +1,5 @@
 
-import { keycardStatuses } from "src/keycard/keycard.enum";
+import { keycardStatuses } from "../keycard/keycard.enum";
 import { IKeyCard } from "../interface/keycard.interface";
 
 export class KeycardRepository {

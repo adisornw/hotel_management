@@ -1,5 +1,5 @@
 
-import { roomStatuses } from "src/room/room.enum";
+import { roomStatuses } from "../room/room.enum";
 import { IRoom } from "../interface/room.interface";
 
 export class RoomRepository {

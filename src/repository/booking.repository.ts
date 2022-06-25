@@ -1,7 +1,5 @@
 
-import { IBooking, INewBooking } from "src/interface/booking.interface";
-import { IGuest } from "../interface/guest.interface";
-import { GuestRepository } from "./guest.repository";
+import { IBooking, INewBooking } from "../interface/booking.interface";
 
 export class BookingRepository {
     private bookings: IBooking[] = [];

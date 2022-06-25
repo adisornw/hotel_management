@@ -9,7 +9,7 @@ import { BookingRepository } from "../repository/booking.repository";
 import { RoomRepository } from "../repository/room.repository";
 import { KeycardRepository } from "../repository/keycard.repository";
 import { roomStatuses } from "../room/room.enum";
-import { GuestRepository } from "src/repository/guest.repository";
+import { GuestRepository } from "../repository/guest.repository";
 
 @Injectable()
 export class BookingService {

@@ -1,5 +1,5 @@
 
-import { IGuest } from "src/interface/guest.interface";
+import { IGuest } from "../interface/guest.interface";
 export class GuestRepository {
     guests: IGuest[] = [];
 
