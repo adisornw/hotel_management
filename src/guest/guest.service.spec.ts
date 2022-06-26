@@ -53,6 +53,6 @@ describe('Guest Unit Test', () => {
                 age: 16
             })
          
-        }) // end test create hotel
-    }) // end hotel suit
+        }) // end test 
+    }) 
 }) // main test

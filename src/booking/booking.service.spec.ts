@@ -72,7 +72,7 @@ describe('Booking Unit Test', () => {
             ])
             const result: string = service.book(mockRoomBooking, mockGuest)
             expect(result).toEqual(`Room ${mockRoomBooking} is booked by ${mockGuest.name} with keycard number 1.`)
-        }) // end test create hotel
+        }) // end test create 
 
 
         it('book faile because room 203 unavalibale', () => {
@@ -166,7 +166,7 @@ describe('Booking Unit Test', () => {
             const result = service.bookByFloor(mockBookFloor, mockGuest)
             expect(result).toEqual(`Cannot book floor ${mockBookFloor} for ${mockGuest.name}.`)
         })
-    }) // end hotel suit
+    }) // end  suit
 
 
     describe('Check-Out Test Suit', () => {

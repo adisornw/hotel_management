@@ -48,5 +48,5 @@ describe('Keycard Unit Test', () => {
                 number: 3
             })
         })
-    }) // end hotel suit
+    }) // end  suit
 }) // main test
