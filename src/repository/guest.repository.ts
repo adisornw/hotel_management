@@ -1,7 +1,7 @@
 
 import { IGuest } from "../interface/guest.interface";
 export class GuestRepository {
-    guests: IGuest[] = [];
+    private guests: IGuest[] = [];
 
     constructor() { }
 

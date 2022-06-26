@@ -15,18 +15,20 @@ export class GuestService {
         private roomRepository:RoomRepository,
     ) { }
 
-    listGuest(): string {
+    listGuest(): IGuest[] {
         let bookings: IBooking[] = [...this.bookingRepository.findCurrentBookings()];
 
         const allGuestName: string[] = [];   //! for display 
-
+        let guests:IGuest[] =[]
         //mapping booking to guests
         bookings.map(_book => {
-            allGuestName.push(_book.guestName)
-            // const guest: IGuest = this.guestRepository.findOneByName(_book.guestName)
+            // allGuestName.push(_book.guestName)
+            const guest: IGuest = this.guestRepository.findOneByName(_book.guestName)
+            guests.push(guest)
             // if (guest) _book.guest = { ...guest }
         })
-        return allGuestName.toString();
+        return guests
+        // return allGuestName.toString();
     }
 
     getGuestInRoom(roomNumber: string): IGuest {
@@ -38,7 +40,7 @@ export class GuestService {
     listGuestByAge(age: number, ageCondition?: string):IGuest[] {
         //mapping booking with guest flow like do sql join
         let bookings: IBooking[] = this.bookingRepository.findCurrentBookings();
-
+        
         const listGuestName: string[] = []
         bookings.forEach(_book => listGuestName.push(_book.guestName))
 

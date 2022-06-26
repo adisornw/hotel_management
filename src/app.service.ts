@@ -59,8 +59,11 @@ export class AppService implements OnApplicationBootstrap {
           console.log(checkoutResult)
           break;
         case 'list_guest':
-          const listGuestResult: string = this.guestService.listGuest()
-          console.log(listGuestResult)
+          const listGuestResult: IGuest[] = this.guestService.listGuest()
+          //for display
+          let listGuestName:string[] = []
+          listGuestResult.forEach(_guest=>listGuestName.push(_guest.name))
+          console.log(listGuestName.toString())
           break;
         case 'get_guest_in_room':
           const guestRoom: string = actions[1]
