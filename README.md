@@ -51,3 +51,7 @@ PeterParker
 - Code Style
 - Programming Language Proficiency
 - OOP/Functional Programming
+
+
+## Running result
+สามารถกด yarn start ได้เลยครับตัวโค้ดจะวิ่งไปอ่าน file input.txt ตามที่ให้มาครับ ขอบคุณครับ
