@@ -13,7 +13,7 @@ export class KeycardService {
     ) {
     }
 
-    create() {
+    create():IKeyCard {
         const keycards:IKeyCard[] = this.keycardRepository.find();
         let nextNumber: number = keycards.length + 1
 
@@ -23,6 +23,7 @@ export class KeycardService {
         }
         
          this.keycardRepository.save(newKeycard)
+         return newKeycard
     } // end 
 
 }

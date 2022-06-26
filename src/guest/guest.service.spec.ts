@@ -4,7 +4,7 @@ import { BookingRepository } from "../repository/booking.repository";
 import { GuestRepository } from "../repository/guest.repository";
 import { GuestService } from "./guest.service";
 
-describe('Hotel Unit Test', () => {
+describe('Guest Unit Test', () => {
     let service: GuestService
 
     beforeEach(async () => {

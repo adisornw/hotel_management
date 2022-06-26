@@ -11,12 +11,15 @@ export const MockDataKeycards: IKeyCard[] = [
 ]
 
 export const MockKeycardRepository = {
-    find: jest.fn(():IKeyCard[] => {
+    find: jest.fn((): IKeyCard[] => {
         return [...MockDataKeycards]
     }),
-    
-    findAvaliableCard: jest.fn(():IKeyCard[]=>{
-        return MockDataKeycards.filter(_card=>_card.isAvaliable)
+
+    findAvaliableCard: jest.fn((): IKeyCard[] => {
+        return MockDataKeycards.filter(_card => _card.isAvaliable)
     }),
-    updateKeycardStatus:jest.fn()
+    updateKeycardStatus: jest.fn(),
+    save: jest.fn((newKeycard: IKeyCard): IKeyCard => {
+        return newKeycard
+    })
 }

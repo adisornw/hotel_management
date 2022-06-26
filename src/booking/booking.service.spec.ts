@@ -13,7 +13,7 @@ import { IBooking } from "../interface/booking.interface";
 import { IKeyCard } from "../interface/keycard.interface";
 import { IRoom } from "../interface/room.interface";
 
-describe('Hotel Unit Test', () => {
+describe('Booking Unit Test', () => {
     let service: BookingService
 
     let keycardRepository: KeycardRepository
